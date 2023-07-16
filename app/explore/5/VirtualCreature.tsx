@@ -9,7 +9,27 @@ const DEAD = 'black';
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [cells, setCells] = useState(Array(Math.floor(window.innerHeight / CELL_SIZE)).fill(Array(Math.floor(window.innerWidth / CELL_SIZE)).fill(false)));
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [cells, setCells] = useState<boolean[][]>([]);
+
+  useEffect(() => {
+    function handleResize() {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize(); // call the function right away
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    setCells(Array(Math.floor(dimensions.height / CELL_SIZE)).fill(Array(Math.floor(dimensions.width / CELL_SIZE)).fill(false)));
+  }, [dimensions]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
